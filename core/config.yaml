@@ -1,0 +1,27 @@
+loss: 
+    type: softmax
+    reg: 0.001
+learning_rate: 1e-3
+batch_size: 10
+learning_decay: 0
+conv1:
+    filter: [7,7,3]
+    num_filters: 32
+    stride: [2,2]
+    pad: VALID
+    bn : True
+    activation: relu
+maxpool:
+    size: [2,2]
+    stride: [2,2]
+affine:
+    outputs: 1024
+    bn: True
+    activation: relu
+affine:
+    outputs: 2
+    bn: False
+    activation: relu
+
+
+        
