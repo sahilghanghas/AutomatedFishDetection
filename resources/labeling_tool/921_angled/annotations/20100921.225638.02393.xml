@@ -1,0 +1,26 @@
+<annotation verified="yes">
+	<folder>Corrected</folder>
+	<filename>20100921.225638.02393.jpg</filename>
+	<path>/home/pushyamik/linux_v1.4.0/Corrected/20100921.225638.02393.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>2048</width>
+		<height>2048</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>fish</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1452</xmin>
+			<ymin>192</ymin>
+			<xmax>1637</xmax>
+			<ymax>297</ymax>
+		</bndbox>
+	</object>
+</annotation>

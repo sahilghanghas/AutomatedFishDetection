@@ -1,0 +1,26 @@
+<annotation>
+	<folder>Corrected</folder>
+	<filename>20100922.013103.06096.jpg</filename>
+	<path>/home/pushyamik/linux_v1.4.0/Corrected/20100922.013103.06096.jpg</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>2048</width>
+		<height>2048</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>coral</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1214</xmin>
+			<ymin>618</ymin>
+			<xmax>1611</xmax>
+			<ymax>971</ymax>
+		</bndbox>
+	</object>
+</annotation>

@@ -15,7 +15,7 @@ from PIL import Image, ImageTk, ImageDraw
 import tkinter
 import json
 
-ROOT_DIR = os.path.abspath("./")
+ROOT_DIR = os.path.abspath("../")
 sys.path.append(ROOT_DIR)
 
 ####################################################################
@@ -27,8 +27,8 @@ sys.path.append(ROOT_DIR)
 
 # Variables#
 # path of the HIT results
-hit_path = "resources/Batch_3400145_batch_results.csv"
-data_path = "resources/imgs"
+hit_path = "../resources/Batch_3408616_batch_results.csv"
+data_path = "../resources/imgs"
 fields = [""]
 
 
