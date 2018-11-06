@@ -49,6 +49,9 @@ def get_images():
     return image_list
 
 
+###
+# Method which takes Annotation dataframe as input and gets the paths of the corresponding images in datafolder into a list
+###
 def get_images_annotations(df):
     hit_df_filtered = df[["HITId", "Input.image_url", "Answer.annotation_data"]]
     image_annotation_list = []
@@ -79,14 +82,19 @@ def tk_image(path, w, h, bbox):
 # Creating Canvas Widget
 class PictureWindow():
     def __init__(self, master, **kwargs):
+        # Dataframe to hold the annotation data
         self.annotation_df = pd.read_csv(hit_path)
         self.current_hit = ""
+        #get the list of images from the annotation frame
         self.imagelist = get_images_annotations(self.annotation_df)
+        #debug statement
         print(self.annotation_df.count(axis='rows')[0])
+
         self.imagelist_p = []
         self.current_image = ''
         self.result_Dictionary = {}
         self.master = master
+
         for key, val in kwargs.items():
             if key == "width":
                 self.w = int(val)
@@ -173,10 +181,12 @@ class PictureWindow():
         self.create_buttons(self.img_canvas)
         self.img_canvas.pack()
         self.control_frame = tkinter.Frame(self.master)
-        tkinter.Radiobutton(self.control_frame, text="Accept", padx=10, \
+        tkinter.Radiobutton(self.control_frame, text="Accept",\
+                            indicatoron = 0,width = 20,height = 10, padx = 20,  \
                             variable=self.result, value= 1, \
                             command=self.update_approval).pack(side=tkinter.LEFT)
-        tkinter.Radiobutton(self.control_frame, text="Reject", padx=10, \
+        tkinter.Radiobutton(self.control_frame, text="Reject", \
+                            indicatoron=0,width=20,height = 10 ,padx=20,\
                             variable=self.result, value= 2, \
                             command=self.update_approval).pack(side=tkinter.RIGHT)
         self.control_frame.pack(side=tkinter.BOTTOM)
@@ -184,8 +194,8 @@ class PictureWindow():
         return
 
     def create_buttons(self, c):
-        tkinter.Button(c, text=" > ", command=self.next_image).place(x=(self.w / 1.1), y=(self.h / 2))
-        tkinter.Button(c, text=" < ", command=self.previous_image).place(x=20, y=(self.h / 2))
+        tkinter.Button(c, text=" > ",width = 10,height = 5, command=self.next_image).place(x=(self.w / 1.1), y=(self.h / 2))
+        tkinter.Button(c, text=" < ", width = 10, height = 5, command=self.previous_image).place(x=20, y=(self.h / 2))
         c['bg'] = "white"
         return
 
