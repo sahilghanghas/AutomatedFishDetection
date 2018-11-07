@@ -158,6 +158,16 @@ class PictureWindow():
         except EOFError as e:
             pass
         return
+    
+    def onRightkey(self, event):
+        print (" Next pressed")
+        self.next_image()
+        return
+
+    def onLeftkey(self, event):
+        print ("Prev pressed")
+        self.previous_image()
+        return
 
     def update_approval(self):
         selection = self.result.get()
@@ -178,6 +188,8 @@ class PictureWindow():
 
     def setup_gui(self):
         self.img_canvas = tkinter.Canvas(self.master, width=self.w, height=self.h)
+        self.master.bind("<Right>", self.onRightkey)
+        self.master.bind("<Left>", self.onLeftkey)
         self.create_buttons(self.img_canvas)
         self.img_canvas.pack()
         self.control_frame = tkinter.Frame(self.master)
