@@ -62,7 +62,6 @@ def get_images_annotations(df, path_lb):
         img = os.path.join(data_path, row["Input.image_url"])
         image_annotation_list.append((index, img, worker_answer))
         #to process image in order
-        image_annotation_list.reverse()
     return image_annotation_list[::-1]
 
 
@@ -120,6 +119,7 @@ class PictureWindow():
         return new_tuple
 
     def show_image(self, pop_tuple):
+        print("showing image")
         path = pop_tuple[1]
         bbox = pop_tuple[2]
         
@@ -145,7 +145,6 @@ class PictureWindow():
         try:
             pop = self.imagelist_p.pop()
             #previous_result = self.result.pop()
-
             self.show_image(pop)
             self.imagelist.append(pop)
         except:
@@ -176,25 +175,34 @@ class PictureWindow():
         items = self.path_listbox.curselection()
         if len(items) == 1:
             ind = int(items[0])
+            pop_ind = self.current_hit
+            print("current hit ind :"+str(self.current_hit) +"  required ind :"+ str(ind))
+
             if(self.current_hit < ind):
                 #next image until finding the ind
-                pop = self.current_hit
-                while( pop < ind):
+                while( pop_ind < ind):
                     pop = self.imagelist.pop()
                     self.imagelist_p.append(pop)
+                    pop_ind = pop[0]
+                    print("popped ind :"+ str(pop_ind))
+                    if (pop_ind == ind):
+                        self.show_image(pop)
+                        break;
+
             elif (self.current_hit > ind):
                 # previosdu image until finidng the ind
                 # next image until finding the ind
-                pop = self.current_hit
-                while (pop > ind):
+                while (pop_ind > ind):
                     pop = self.imagelist_p.pop()
                     self.imagelist.append(pop)
+                    pop_ind = pop[0]
+                    print("popped ind :" + str(pop_ind))
+                    if (pop_ind == ind):
+                        self.show_image(pop)
             else:
                 #nothing
                 return
-            if (pop == ind):
-                self.show_image(pop)
-            else:
+            if (pop_ind != ind):
                 print("ERROR: didnt find the image")
         return
 
