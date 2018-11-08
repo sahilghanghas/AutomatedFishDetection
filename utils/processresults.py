@@ -52,14 +52,17 @@ def get_images():
 ###
 # Method which takes Annotation dataframe as input and gets the paths of the corresponding images in datafolder into a list
 ###
-def get_images_annotations(df):
+def get_images_annotations(df, path_lb):
     hit_df_filtered = df[["HITId", "Input.image_url", "Answer.annotation_data"]]
     image_annotation_list = []
     for index, row in hit_df_filtered.iterrows():
         # print(row["Input.image_url"], row["Answer.annotation_data"])
         worker_answer = json.loads(row["Answer.annotation_data"])
+        path_lb.insert(tkinter.END, row["Input.image_url"])
         img = os.path.join(data_path, row["Input.image_url"])
         image_annotation_list.append((index, img, worker_answer))
+        #to process image in order
+        image_annotation_list.reverse()
     return image_annotation_list[::-1]
 
 
@@ -82,13 +85,6 @@ def tk_image(path, w, h, bbox):
 # Creating Canvas Widget
 class PictureWindow():
     def __init__(self, master, **kwargs):
-        # Dataframe to hold the annotation data
-        self.annotation_df = pd.read_csv(hit_path)
-        self.current_hit = ""
-        #get the list of images from the annotation frame
-        self.imagelist = get_images_annotations(self.annotation_df)
-        #debug statement
-        print(self.annotation_df.count(axis='rows')[0])
 
         self.imagelist_p = []
         self.current_image = ''
@@ -102,6 +98,15 @@ class PictureWindow():
                 self.h = int(val)
         self.result = tkinter.IntVar()
         self.setup_gui()
+        # Dataframe to hold the annotation data
+        self.annotation_df = pd.read_csv(hit_path)
+        self.current_hit = ""
+        # get the list of images from the annotation frame
+        self.imagelist = get_images_annotations(self.annotation_df, self.path_listbox)
+        self.original_imglist = self.imagelist.copy()
+        # debug statement
+        print(self.annotation_df.count(axis='rows')[0])
+
 
     def on_close(self):
         print("in closing")
@@ -127,6 +132,13 @@ class PictureWindow():
         #print(self.img_canvas.find_withtag("bacl"))
         #print(self.current_hit)
         self.master.title("Image Viewer ({})".format(path))
+
+        # edited - Sahil
+        if self.result_Dictionary.get(self.current_hit) is not None:
+            self.result.set(self.result_Dictionary.get(self.current_hit))
+        else:
+            self.result.set(0)
+
         return
 
     def previous_image(self):
@@ -136,11 +148,6 @@ class PictureWindow():
 
             self.show_image(pop)
             self.imagelist.append(pop)
-            # edited - Sahil
-            if self.result_Dictionary.get(self.current_hit) is not None:
-                self.result.set(self.result_Dictionary.get(self.current_hit))
-            else:
-                self.result.set(0)
         except:
             pass
         return
@@ -150,15 +157,10 @@ class PictureWindow():
             pop = self.imagelist.pop()
             self.show_image(pop)
             self.imagelist_p.append(pop)
-            # edited - Sahil
-            if self.result_Dictionary.get(self.current_hit) is not None:
-                self.result.set(self.result_Dictionary.get(self.current_hit))
-            else:
-                self.result.set(0)
         except EOFError as e:
             pass
         return
-    
+
     def onRightkey(self, event):
         print (" Next pressed")
         self.next_image()
@@ -167,6 +169,33 @@ class PictureWindow():
     def onLeftkey(self, event):
         print ("Prev pressed")
         self.previous_image()
+        return
+
+    def select_image(self, event):
+        print("image selection")
+        items = self.path_listbox.curselection()
+        if len(items) == 1:
+            ind = int(items[0])
+            if(self.current_hit < ind):
+                #next image until finding the ind
+                pop = self.current_hit
+                while( pop < ind):
+                    pop = self.imagelist.pop()
+                    self.imagelist_p.append(pop)
+            elif (self.current_hit > ind):
+                # previosdu image until finidng the ind
+                # next image until finding the ind
+                pop = self.current_hit
+                while (pop > ind):
+                    pop = self.imagelist_p.pop()
+                    self.imagelist.append(pop)
+            else:
+                #nothing
+                return
+            if (pop == ind):
+                self.show_image(pop)
+            else:
+                print("ERROR: didnt find the image")
         return
 
     def update_approval(self):
@@ -187,23 +216,42 @@ class PictureWindow():
         return
 
     def setup_gui(self):
+        #this is the canvas to sho image
         self.img_canvas = tkinter.Canvas(self.master, width=self.w, height=self.h)
+        #bind root widget to keys to go to next image and previous image
         self.master.bind("<Right>", self.onRightkey)
         self.master.bind("<Left>", self.onLeftkey)
+        #create buttons to go next and previous
         self.create_buttons(self.img_canvas)
-        self.img_canvas.pack()
+        self.img_canvas.pack(side=tkinter.LEFT)
+
         self.control_frame = tkinter.Frame(self.master)
-        tkinter.Radiobutton(self.control_frame, text="Accept",\
-                            indicatoron = 0,width = 20,height = 10, padx = 20,  \
+
+        result_frame = tkinter.Frame(self.control_frame)
+        tkinter.Radiobutton(result_frame, text="Accept",\
+                            indicatoron = 0,width = 20,height = 10,  \
                             variable=self.result, value= 1, \
                             command=self.update_approval).pack(side=tkinter.LEFT)
-        tkinter.Radiobutton(self.control_frame, text="Reject", \
-                            indicatoron=0,width=20,height = 10 ,padx=20,\
+        tkinter.Radiobutton(result_frame, text="Reject", \
+                            indicatoron=0,width=20,height = 10,\
                             variable=self.result, value= 2, \
                             command=self.update_approval).pack(side=tkinter.RIGHT)
-        self.control_frame.pack(side=tkinter.BOTTOM)
+
+        list_frame = tkinter.Frame(self.control_frame)
+        scrollbar = tkinter.Scrollbar(list_frame, orient=tkinter.VERTICAL)
+
+        self.path_listbox = tkinter.Listbox(list_frame, height=30, width=20,yscrollcommand=scrollbar.set)
+        self.path_listbox.bind("<Double-Button-1>", self.select_image)
+
+        scrollbar.pack(side=tkinter.RIGHT)
+        self.path_listbox.pack(fill=tkinter.X)
+
+        result_frame.pack(side=tkinter.TOP, fill=tkinter.X)
+        list_frame.pack(side=tkinter.BOTTOM, fill=tkinter.X)
+
+        self.control_frame.pack(side=tkinter.LEFT)
         # self.window_settings()
-        return
+
 
     def create_buttons(self, c):
         tkinter.Button(c, text=" > ",width = 10,height = 5, command=self.next_image).place(x=(self.w / 1.1), y=(self.h / 2))
