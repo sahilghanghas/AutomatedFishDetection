@@ -11,7 +11,7 @@ import pandas as pd
 import os
 import pandas as pd
 import sys
-from PIL import Image, ImageTk, ImageDraw
+from PIL import Image, ImageTk, ImageDraw, ImageFont
 import tkinter
 import json
 import shutil
@@ -68,6 +68,8 @@ def get_images_annotations(df, path_lb):
 def tk_image(path, w, h, bbox):
     img = Image.open(path)
     draw = ImageDraw.Draw(img)
+    # get a font
+    fnt = ImageFont.truetype('../resources/arial.ttf', 27)
     # draw.rectangle([left, top, right, bottom])
     for box in bbox:
         top = float(box['top'])
@@ -76,6 +78,7 @@ def tk_image(path, w, h, bbox):
         right = float(box['left']) + float(box['width'])
         draw.line([(left, top), (right, top), (right, bottom), \
                (left, bottom), (left, top)], width=3)
+        draw.text((left, top-10), box['label'] , font=fnt, fill=(255,255,255,128))
     img = img.resize((w, h))
     storeobj = ImageTk.PhotoImage(img)
     return storeobj
