@@ -87,6 +87,12 @@ class PictureWindow():
         self.current_image = ''
         self.result_Dictionary = {}
         self.master = master
+        self.counter_frame = tkinter.Frame(self.master, height=100, bg="Black")
+        tkinter.Label(self.counter_frame, text="Total Images: "+ str(self.annotation_df.count(axis='rows')[0])).pack(side=tkinter.LEFT)
+        self.imagesDone = tkinter.Label(self.counter_frame, fg="red")
+        self.imagesDone.pack(side=tkinter.LEFT)
+        self.counter_frame.pack(side=tkinter.TOP)
+        self.done = 0
         for key, val in kwargs.items():
             if key == "width":
                 self.w = int(val)
@@ -109,7 +115,7 @@ class PictureWindow():
     def show_image(self, pop_tuple):
         path = pop_tuple[1]
         bbox = pop_tuple[2]
-        
+        self.imagesDone.config(text="Images Done: " + str(len(self.result_Dictionary)))
         img = tk_image(path, self.w, self.h, bbox)
         self.img_canvas.delete(self.img_canvas.find_withtag("bacl"))
         self.allready = self.img_canvas.create_image(self.w / 2, self.h / 2, image=img, anchor='center', tag="bacl")
@@ -153,7 +159,8 @@ class PictureWindow():
 
     def update_approval(self):
         selection = self.result.get()
-        print(self.annotation_df.loc[self.current_hit, "Input.image_url"])
+        self.done = len(self.result_Dictionary)
+        #print(self.annotation_df.loc[self.current_hit, "Input.image_url"])
         if selection == 1:
             self.annotation_df.loc[self.current_hit, "Approve"] = "X"
             print(self.annotation_df.loc[self.current_hit, "Approve"])
@@ -172,13 +179,17 @@ class PictureWindow():
         self.img_canvas = tkinter.Canvas(self.master, width=self.w, height=self.h)
         self.create_buttons(self.img_canvas)
         self.img_canvas.pack()
-        self.control_frame = tkinter.Frame(self.master)
-        tkinter.Radiobutton(self.control_frame, text="Accept", padx=10, \
+        self.control_frame = tkinter.Frame(self.master, height=100, bg="Black")
+        
+        tkinter.Radiobutton(self.control_frame, text="Accept", indicatoron = 0,
+                  width = 20,padx=10, \
                             variable=self.result, value= 1, \
                             command=self.update_approval).pack(side=tkinter.LEFT)
-        tkinter.Radiobutton(self.control_frame, text="Reject", padx=10, \
+        tkinter.Radiobutton(self.control_frame, text="Reject", indicatoron = 0,
+                  width = 20,padx=10, \
                             variable=self.result, value= 2, \
                             command=self.update_approval).pack(side=tkinter.RIGHT)
+        
         self.control_frame.pack(side=tkinter.BOTTOM)
         # self.window_settings()
         return
