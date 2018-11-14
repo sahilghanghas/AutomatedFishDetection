@@ -248,6 +248,10 @@ class PictureWindow():
         self.control_frame = tkinter.Frame(self.master)
 
         result_frame = tkinter.Frame(self.control_frame)
+        tkinter.Radiobutton(result_frame, text="Save", \
+                            indicatoron=0,width=20,height = 10,\
+                            variable=self.result, value= 3, \
+                            command=self.on_close).pack(side=tkinter.LEFT)
         tkinter.Radiobutton(result_frame, text="Accept",\
                             indicatoron = 0,width = 20,height = 10,  \
                             variable=self.result, value= 1, \
