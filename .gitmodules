@@ -1,3 +1,6 @@
 [submodule "ssd_keras"]
 	path = ssd_keras
 	url = https://github.com/pierluigiferrari/ssd_keras.git
+[submodule "keras-vis"]
+	path = keras-vis
+	url = https://github.com/raghakot/keras-vis.git
