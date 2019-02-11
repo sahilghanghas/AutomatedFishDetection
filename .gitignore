@@ -3,4 +3,5 @@
 *.jpg
 *.csv
 *.h5
+resources/*
 
